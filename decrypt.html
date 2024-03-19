@@ -22,13 +22,14 @@
     </div>
   </div>
 
-  <div class="zone-image">
-    <textarea id="content" class="result" rows="20" cols="50"></textarea>
+  <div class="zone-image" style="text-align: center;">
+    <textarea id="content" class="result" rows="0" cols="0" style="display: none;"></textarea>
     <label>
       <input type="text" id="secret" placeholder="Enter your secret key">
       <button onclick="decryptFromDES()">Decrypt</button>
     </label>   
   </div>
+  
 
   <script>
     function previewFile() {

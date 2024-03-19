@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Comparison</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    #imageInput1, #imageInput2 {
+        display: block;
+        margin-bottom: 10px;
+    }
+    #compareBtn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    #result {
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+    <input type="file" id="imageInput1" accept="image/*">
+    <input type="file" id="imageInput2" accept="image/*">
+    <button id="compareBtn">Compare</button>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('compareBtn').addEventListener('click', function() {
+            var imageInput1 = document.getElementById('imageInput1').files[0];
+            var imageInput2 = document.getElementById('imageInput2').files[0];
+
+            if (imageInput1 && imageInput2) {
+                var reader1 = new FileReader();
+                var reader2 = new FileReader();
+
+                reader1.onload = function(e) {
+                    var img1 = new Image();
+                    img1.src = e.target.result;
+
+                    reader2.onload = function(e) {
+                        var img2 = new Image();
+                        img2.src = e.target.result;
+
+                        img1.onload = img2.onload = function() {
+                            var canvas = document.createElement('canvas');
+                            var ctx = canvas.getContext('2d');
+                            var width = Math.max(img1.width, img2.width);
+                            var height = Math.max(img1.height, img2.height);
+
+                            canvas.width = width;
+                            canvas.height = height;
+
+                            ctx.drawImage(img1, 0, 0);
+                            var imageData1 = ctx.getImageData(0, 0, width, height).data;
+
+                            ctx.drawImage(img2, 0, 0);
+                            var imageData2 = ctx.getImageData(0, 0, width, height).data;
+
+                            var totalPixels = width * height;
+                            var matchCount = 0;
+
+                            for (var i = 0; i < totalPixels; i++) {
+                                if (imageData1[i * 4] === imageData2[i * 4] &&
+                                    imageData1[i * 4 + 1] === imageData2[i * 4 + 1] &&
+                                    imageData1[i * 4 + 2] === imageData2[i * 4 + 2] &&
+                                    imageData1[i * 4 + 3] === imageData2[i * 4 + 3]) {
+                                    matchCount++;
+                                }
+                            }
+
+                            var matchPercentage = (matchCount / totalPixels) * 100;
+                            document.getElementById('result').innerText = 'Match Percentage: ' + matchPercentage.toFixed(2) + '%';
+                        };
+                    };
+                    reader2.readAsDataURL(imageInput2);
+                };
+                reader1.readAsDataURL(imageInput1);
+            } else {
+                alert('Please select two images.');
+            }
+        });
+    </script>
+</body>
+</html>
